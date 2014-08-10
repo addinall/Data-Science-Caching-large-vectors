@@ -85,7 +85,7 @@
         global_matrix <- matrix(c(1:16),nrow=4,ncol=4) 
         global_inverse_matrix <- matrix(c(16:1),nrow=1,ncol=1) 
         list(
-
+            constructor     = function() { print("That's IT") },
             is_locked       = function() { locked },
             lock            = function() { locked<<-TRUE },
             unlock          = function() { locked<<-FALSE },
@@ -98,7 +98,7 @@
         )
     }
 
-    global <- __get_global()
+    global <- get_global()
 
 
 ##-----------------------------------------
