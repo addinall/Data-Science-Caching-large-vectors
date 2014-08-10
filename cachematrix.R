@@ -49,6 +49,13 @@
 ## perhaps for a game written in R or something equally
 ## bizzare! ;-)
 ##
+## Oh, I read this as well.   
+## Google's R Style Guide
+##
+## YOU HAVE TO BE KIDDING ME!!!  wimpyCaps ???
+## biteMe javaWeenies
+## and dots are just STOOPID
+##
 ##
 ## These are the prototype we were asked to demonstrate.
 ## I am going to do so, but in a rather different way!
@@ -71,13 +78,14 @@
 ## provided to the application level.  I intend to submit this 
 ## (working) as my SHARED memory architecture.
 
-    ## ----------------------
-    getGlobal <- function() {
+    ## -------------------------
+    __get_global <- function() {
         counter <- 1
         locked <- FALSE
         global_matrix <- matrix(c(1:16),nrow=4,ncol=4) 
         global_inverse_matrix <- matrix(c(16:1),nrow=1,ncol=1) 
         list(
+
             is_locked       = function() { locked },
             lock            = function() { locked<<-TRUE },
             unlock          = function() { locked<<-FALSE },
@@ -90,10 +98,25 @@
         )
     }
 
-    GLOBAL <- getGlobal()
+    global <- __get_global()
 
 
+##-----------------------------------------
+makeCacheMatrix <- function(x = matrix()) {
+
+## if the GLOBAL matrix isn't in memory somewhere, initiate the build.
+## this used to be some complicated munging of memory states and a collection
+## of yucky things like collections where the functions and the variables
+## had the same identifiers, on-the-fly polymorphism and abrupt context
+## switches.  No no no...  KISS.
+
+    
 }
 
 
+## ------------------------------
+cacheSolve <- function(x, ...) {
 
+## Return a matrix that is the inverse of 'x'
+
+}
