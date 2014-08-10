@@ -79,7 +79,7 @@
 ## (working) as my SHARED memory architecture.
 
     ## -------------------------
-    __get_global <- function() {
+    get_global <- function() {
         counter <- 1
         locked <- FALSE
         global_matrix <- matrix(c(1:16),nrow=4,ncol=4) 
