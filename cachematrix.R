@@ -71,6 +71,33 @@
 ##
 ## Return a matrix that is the inverse of 'x'
 
+## following are utlity functions that should go into a package.  
+## After this course is finished I will probably implement it
+## for real.
+
+##----------------------------------
+spin_lock_contention <- function() {
+
+## wait until the object lock clears before allowing
+## MUTATORS
+## access to SHARED memory
+
+
+}
+
+
+## -----------------------------
+security_manager <- function() {
+
+## control access to SHARED memory by way of
+## interprocess shared secrets.  Access to the
+## shared secret at this level is not possible,
+## hence no arguments
+
+}
+
+
+
 ## The idea of this code is too provide the same level of GLOBAL
 ## access to "CACHED" data but in a more formal method that follows
 ## an OOP paradigm.  That is, all data that is SHARED is PRIVATE
@@ -78,19 +105,54 @@
 ## provided to the application level.  I intend to submit this 
 ## (working) as my SHARED memory architecture.
 
+## The concept is sort of the same as what was presented as
+## the traditional method of using the superassignment operator.
+## The old way had individual bits of code in functions DIRECTLY
+## accessing out of scope variables.  Messy.  Given the way R
+## ALREADY manages it's lexical scope, we can allocate memory
+## by way of an encapsulated set of methods and properties inside
+## a clusure (function) in the global environment WITHOUT
+## bending any rules.  This OOD/OOP method has a number of
+## benifits.
+##
+## 1. first and formost, brings OOP structure into the code
+## 2. encapsulates the code with our choice of privacy. Methods
+##    and properties can be Public or Private.
+## 3. being encapsulated we can implement some spin lock contention
+##    routines to stop multiple processes changing shared memory
+##    concurrently.
+## 4. for secure deployments, we can implement function to function
+##    access security in the form of shared-secret keys required
+## 5. to access the accessors and mutators.  The trivial routine
+##    implemented in this offering uses an MD5 hash of THIS source
+##    code as an inter-process shared secret.
+## 6. it's pretty and I like it and I'm old!  ;-)
+
+
     ## -------------------------
     get_global <- function() {
+
+        ## Private properties
+        ## can ONLY be accessed by accessors and mutators in here
+        secret  <- "a2e57d6b9b8712f52a149e96bc31d32c"                                          
         counter <- 1
-        locked <- FALSE
+        locked  <- FALSE
         global_matrix <- matrix(c(1:16),nrow=4,ncol=4) 
-        global_inverse_matrix <- matrix(c(16:1),nrow=1,ncol=1) 
+        global_inverse_matrix <- matrix(c(16:1),nrow=1,ncol=1)
+
+        ## Private methods
+        spin_lock   <- spin_lock_contention() 
+        check_id    <- security_manager()
+
+        ## Public methods
         list(
             constructor     = function() { print("That's IT") },
             is_locked       = function() { locked },
             lock            = function() { locked<<-TRUE },
             unlock          = function() { locked<<-FALSE },
             visit           = function() { counter <<- counter + 1 },
-            visits,         = function() { counter },
+            visits          = function() { counter },
+            build_matrix    = function(x){ global_matrix <- x build() }
             gsolve          = function() { global_inverse_matrix <<- solve(global_matrix) },
             gsolve_return   = function(x){ return( solve( x )) },
             cache_return    = function() { return( global_matrix ) },
@@ -110,6 +172,7 @@ makeCacheMatrix <- function(x = matrix()) {
 ## had the same identifiers, on-the-fly polymorphism and abrupt context
 ## switches.  No no no...  KISS.
 
+    global$build_matrix(x)
     
 }
 
@@ -119,4 +182,35 @@ cacheSolve <- function(x, ...) {
 
 ## Return a matrix that is the inverse of 'x'
 
+    mat -> global$inverse_return()
+    if (! is.null(mat)) {
+        return(mat)
+    } else {
+        global$gsolve()
+        mat -> global$inverse_return()
+    }
 }
+
+
+## ------------------------------
+unit_test_harness <- function() {
+
+## as we develop methods and add properties, build
+## UNIT test methods in here for controlled
+## regression testing.  If the test harness is in the same file
+## as the main OBJECT, perhaps it will not get forgotten!!! ;-)
+
+    report_lock <- function() {
+        global$is_locked()
+    }
+
+    lock_her <- function() {
+        global$lock()
+        report_lock()
+    }
+
+    unlock_it <- function() {
+
+    }
+}
+
