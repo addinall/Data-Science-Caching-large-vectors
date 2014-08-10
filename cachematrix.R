@@ -148,11 +148,11 @@ security_manager <- function() {
         list(
             constructor     = function() { print("That's IT") },
             is_locked       = function() { locked },
-            lock            = function() { locked<<-TRUE },
-            unlock          = function() { locked<<-FALSE },
+            lock            = function() { locked <<- TRUE },
+            unlock          = function() { locked <<- FALSE },
             visit           = function() { counter <<- counter + 1 },
             visits          = function() { counter },
-            build_matrix    = function(x){ global_matrix <- x build() }
+            build_matrix    = function(x){ global_matrix <- x },
             gsolve          = function() { global_inverse_matrix <<- solve(global_matrix) },
             gsolve_return   = function(x){ return( solve( x )) },
             cache_return    = function() { return( global_matrix ) },
