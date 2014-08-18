@@ -1,5 +1,8 @@
 ### Introduction
 
+This document was created by the staff of Johns Hopkins.  I included it as a README.md so I had a convenient place to gawk at the thing whilst coding.
+
+
 This second programming assignment will require you to write an R
 function that is able to cache potentially time-consuming computations.
 For example, taking the mean of a numeric vector is typically a fast
