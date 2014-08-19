@@ -74,17 +74,9 @@ spin_lock_contention <- function() {
 ## MUTATORS
 ## access to SHARED memory
 
-
-}
-
-
-## -----------------------------
-security_manager <- function() {
-
-## control access to SHARED memory by way of
-## interprocess shared secrets.  Access to the
-## shared secret at this level is not possible,
-## hence no arguments
+    while (global$locked() {
+        Sys.sleep(1.5)          ## snooze for 1.5 seconds
+    }
 
 }
 
@@ -125,11 +117,10 @@ security_manager <- function() {
 
         ## Private properties
         ## can ONLY be accessed by accessors and mutators in here
-        secret  <- "a2e57d6b9b8712f52a149e96bc31d32c"                                          
-        counter <- 1
-        locked  <- FALSE
-        global_matrix <- matrix(trunc(rnorm(512*512)*100), 512,512)
-        global_inverse_matrix <- solve(global_matrix)
+        
+        locked                  <- FALSE
+        global_matrix           <- NULL 
+        global_inverse_matrix   <- NULL 
 
         ## Private methods
         spin_lock   <- spin_lock_contention() 
@@ -137,17 +128,11 @@ security_manager <- function() {
 
         ## Public methods
         list(
-            constructor     = function() { print("That's IT") },
             is_locked       = function() { locked },
             lock            = function() { locked <<- TRUE },
             unlock          = function() { locked <<- FALSE },
-            visit           = function() { counter <<- counter + 1 },
-            visits          = function() { counter },
             build_matrix    = function(x){ global_matrix <<- x },
             gsolve          = function() { global_inverse_matrix <<- solve(global_matrix) },
-            gsolve_return   = function(x){ return( solve( x )) },
-            cache_return    = function() { return( global_matrix ) },
-            inverse_return  = function() { return( global_inverse_matrix ) }
         )
     }
 
@@ -162,6 +147,7 @@ makeCacheMatrix <- function(x = matrix()) {
 ## had the same identifiers, on-the-fly polymorphism and abrupt context
 ## switches.  No no no...  KISS.
 
+    x <- matrix(trunc(rnorm(512*512)*100), 512,512)
     global$build_matrix(x)
     
 }
@@ -178,29 +164,6 @@ cacheSolve <- function(x, ...) {
     } else {
         global$gsolve()
         mat -> global$inverse_return()
-    }
-}
-
-
-## ------------------------------
-unit_test_harness <- function() {
-
-## as we develop methods and add properties, build
-## UNIT test methods in here for controlled
-## regression testing.  If the test harness is in the same file
-## as the main OBJECT, perhaps it will not get forgotten!!! ;-)
-
-    report_lock <- function() {
-        global$is_locked()
-    }
-
-    lock_her <- function() {
-        global$lock()
-        report_lock()
-    }
-
-    unlock_it <- function() {
-
     }
 }
 
