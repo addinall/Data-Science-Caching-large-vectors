@@ -67,21 +67,6 @@
 ## After this course is finished I will probably implement it
 ## for real.
 
-##----------------------------------
-spin_lock_contention <- function() {
-
-## wait until the object lock clears before allowing
-## MUTATORS
-## access to SHARED memory
-
-    while (global$locked() {
-        Sys.sleep(1.5)          ## snooze for 1.5 seconds
-    }
-
-}
-
-
-
 ## The idea of this code is too provide the same level of GLOBAL
 ## access to "CACHED" data but in a more formal method that follows
 ## an OOP paradigm.  That is, all data that is SHARED is PRIVATE
@@ -104,9 +89,10 @@ spin_lock_contention <- function() {
 ##    and properties can be Public or Private.
 ## 3. being encapsulated we can implement some spin lock contention
 ##    routines to stop multiple processes changing shared memory
-##    concurrently.
+##    concurrently.  Not implemented here.
 ## 4. for secure deployments, we can implement function to function
 ##    access security in the form of shared-secret keys required
+##    (not implemented here)
 ## 5. to access the accessors and mutators.  The trivial routine
 ##    implemented in this offering uses an MD5 hash of THIS source
 ##    code as an inter-process shared secret.
@@ -122,48 +108,66 @@ spin_lock_contention <- function() {
         global_matrix           <- NULL 
         global_inverse_matrix   <- NULL 
 
-        ## Private methods
-        spin_lock   <- spin_lock_contention() 
-        check_id    <- security_manager()
-
         ## Public methods
+        ##
+        ## We see here we are still using the "superassignment"
+        ## operator, but only within this encapsulation
+
         list(
-            is_locked       = function() { locked },
-            lock            = function() { locked <<- TRUE },
-            unlock          = function() { locked <<- FALSE },
+            is_locked       = function() { locked },                        ## we can lock out mutators from
+            lock            = function() { locked <<- TRUE },               ## changing the properties at
+            unlock          = function() { locked <<- FALSE },              ## the same time
             build_matrix    = function(x){ global_matrix <<- x },
-            gsolve          = function() { global_inverse_matrix <<- solve(global_matrix) },
+            build_cache     = function() { global_inverse_matrix <<- solve(global_matrix) },
+            get_matrix      = function() { return(global_matrix) },         ## in the R memory management, our scope
+            get_cache       = function() { return(global_inverse_matrix) }  ## allows us to read a parent's property
         )
     }
 
 
 
-##-----------------------------------------
-makeCacheMatrix <- function(x = matrix()) {
+##-----------------------------
+makeCacheMatrix <- function() {
 
 ## if the GLOBAL matrix isn't in memory somewhere, initiate the build.
 ## this used to be some complicated munging of memory states and a collection
 ## of yucky things like collections where the functions and the variables
-## had the same identifiers, on-the-fly polymorphism and abrupt context
-## switches.  No no no...  KISS.
+## had the same identifiers
 
-    x <- matrix(trunc(rnorm(512*512)*100), 512,512)
+    x <- matrix(trunc(rnorm(128*128)*100), 64, 64)
     global$build_matrix(x)
-    
+    global$build_cache() 
 }
 
 
-## ------------------------------
-cacheSolve <- function(x, ...) {
+## -----------------------
+cacheSolve <- function() {
 
-## Return a matrix that is the inverse of 'x'
+## Return a matrix that is the inverse of
+## an encapsulated "global"
 
-    mat -> global$inverse_return(x, ...)
-    if (! is.null(mat)) {
-        return(mat)
+    mat <- global$get_cache()           ## see if we can access the cache
+    if (! is.null(mat)) {               ## yes, it has been built
+        return(mat)                     ## send it back
     } else {
-        global$gsolve()
-        mat -> global$inverse_return()
+        makeCacheMatrix()               ## nope, we need to build it
+        mat <- global$get_cache()       ## and fetch it
+        return(mat)                     ## and send it back
     }
 }
+
+
+## instance of the class
+
+global <- get_global()
+
+## now in a real implementation we wouldn't use these external functions,
+## cachSolve and makeCacheMatrix as the OBJECT encapsulation makes the
+## a bit redundant.  I am keeping them in this display only to fufill
+## the instructions of the assignment, viz, "write two functions named ...".
+
+
+external_solved_matrix <- cacheSolve()
+print(external_solved_matrix)
+
 
