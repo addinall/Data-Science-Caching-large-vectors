@@ -1,13 +1,10 @@
 ## CAPTAIN SLOG
 ## vim: set expandtab tabstop=4 shiftwidth=4 autoindent smartindent:
 ## File         : cachematrix.R
-## System       : Assignment 2 (Peer review)
+## System       : Assignment 2
 ## Date         : 10/08/2014
 ## Author       : Mark Addinall
-## Synopsis     : This file is part of the course work
-##                assignments for the Johns Hopkins
-##                series of Data Science units.
-##                This unit is R Programming
+## Synopsis     : 
 ##
 ## This function demonstrates the ability of the R
 ## programming environment to store the value of a 
