@@ -49,14 +49,6 @@
 ## perhaps for a game written in R or something equally
 ## bizzare! ;-)
 ##
-## Oh, I read this as well.   
-## Google's R Style Guide
-##
-## YOU HAVE TO BE KIDDING ME!!!  wimpyCaps ???
-## biteMe javaWeenies
-## and dots are just STOOPID
-##
-##
 ## These are the prototype we were asked to demonstrate.
 ## I am going to do so, but in a rather different way!
 ##
@@ -126,7 +118,6 @@ security_manager <- function() {
 ## 5. to access the accessors and mutators.  The trivial routine
 ##    implemented in this offering uses an MD5 hash of THIS source
 ##    code as an inter-process shared secret.
-## 6. it's pretty and I like it and I'm old!  ;-)
 
 
     ## -------------------------
@@ -137,8 +128,8 @@ security_manager <- function() {
         secret  <- "a2e57d6b9b8712f52a149e96bc31d32c"                                          
         counter <- 1
         locked  <- FALSE
-        global_matrix <- matrix(c(1:16),nrow=4,ncol=4) 
-        global_inverse_matrix <- matrix(c(16:1),nrow=1,ncol=1)
+        global_matrix <- matrix(trunc(rnorm(512*512)*100), 512,512)
+        global_inverse_matrix <- solve(global_matrix)
 
         ## Private methods
         spin_lock   <- spin_lock_contention() 
@@ -152,7 +143,7 @@ security_manager <- function() {
             unlock          = function() { locked <<- FALSE },
             visit           = function() { counter <<- counter + 1 },
             visits          = function() { counter },
-            build_matrix    = function(x){ global_matrix <- x },
+            build_matrix    = function(x){ global_matrix <<- x },
             gsolve          = function() { global_inverse_matrix <<- solve(global_matrix) },
             gsolve_return   = function(x){ return( solve( x )) },
             cache_return    = function() { return( global_matrix ) },
@@ -160,7 +151,6 @@ security_manager <- function() {
         )
     }
 
-    global <- get_global()
 
 
 ##-----------------------------------------
@@ -182,7 +172,7 @@ cacheSolve <- function(x, ...) {
 
 ## Return a matrix that is the inverse of 'x'
 
-    mat -> global$inverse_return()
+    mat -> global$inverse_return(x, ...)
     if (! is.null(mat)) {
         return(mat)
     } else {
